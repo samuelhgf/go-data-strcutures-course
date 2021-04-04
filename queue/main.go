@@ -5,65 +5,94 @@ import (
 	"fmt"
 )
 
-// Queue - our representation of a queue data structure
-type Queue struct {
-	Elements []int
+// PriorityQueue - our representation of a queue data structure
+type PriorityQueue struct {
+	High []int
+	Low []int
 }
 
 // Enqueue - add an element of type int to ehe end of our queue
-func (q *Queue) Enqueue(elem int) {
-	q.Elements = append(q.Elements, elem)
+func (q *PriorityQueue) Enqueue(elem int, highPriority bool) {
+	if highPriority {
+		q.High = append(q.High, elem)
+	}else{
+		q.Low = append(q.Low, elem)
+	}
 }
 
 // Dequeue - returns the first element from our queue
-func (q *Queue) Dequeue() (int, error) {
-	// return the first element
-	// update elements slice
-	// validate queue is not empty
-	if q.IsEmpty() {
-		return 0, errors.New("empty queue")
+func (q *PriorityQueue) Dequeue() (int, error) {
+	// if the length of the high priority queue!= 0
+	// return the first element from the high priority queue
+	// otherwise if the length of the low priority != 0
+	// return the first element from the low priority queue
+
+	if len(q.High) != 0 {
+		var firstElement int
+		firstElement, q.High = q.High[0], q.High[1:]
+
+		return firstElement, nil
 	}
 
-	var firstElement int
-	firstElement, q.Elements = q.Elements[0], q.Elements[1:]
-	return firstElement, nil
+	if len(q.Low) != 0 {
+		var firstElement int
+		firstElement, q.Low = q.Low[0], q.Low[1:]
+
+		return firstElement, nil
+	}
+
+	return 0, errors.New("empty queue")
 }
 
 // Length - returns the length of our queue
-func (q *Queue) Length() int {
-	return len(q.Elements)
+func (q *PriorityQueue) Length() int {
+	return len(q.High) + len(q.Low)
 }
 
 // Peek - returns the first element from our queue without updating queue
-func (q *Queue) Peek() (int, error) {
-	if q.IsEmpty() {
-		return 0, errors.New("empty queue")
+func (q *PriorityQueue) Peek() (int, error) {
+	if len(q.High) != 0 {
+		return q.High[0], nil
 	}
 
-	return q.Elements[0], nil
+	if len(q.Low) != 0 {
+		return q.Low[0], nil
+	}
+
+	return 0, errors.New("empty queue")
 }
 
 // IsEmpty - returns true if queue is empty
-func (q *Queue) IsEmpty() bool {
+func (q *PriorityQueue) IsEmpty() bool {
 	return q.Length() == 0
 }
 
 func main() {
 	fmt.Println("Queue Tutorial")
 
-	queue := Queue{}
+	queue := PriorityQueue{}
 	fmt.Println(queue)
 
-	queue.Enqueue(1)
+	queue.Enqueue(1, true)
 	fmt.Println(queue)
-
-	queue.Enqueue(2)
-
+	queue.Enqueue(10, false)
 	fmt.Println(queue)
 
 	elem, _ := queue.Dequeue()
 
 	fmt.Println(elem)
+	fmt.Println(queue)
 
+	queue.Enqueue(2, true)
+	fmt.Println(queue)
+
+	elem, _ = queue.Dequeue()
+
+	fmt.Println(elem)
+	fmt.Println(queue)
+
+	elem, _ = queue.Dequeue()
+
+	fmt.Println(elem)
 	fmt.Println(queue)
 }
